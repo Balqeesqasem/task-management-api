@@ -7,6 +7,7 @@ use CodeIgniter\Database\Config;
 /**
  * Database Configuration
  */
+
 class Database extends Config
 {
     /**
@@ -26,12 +27,12 @@ class Database extends Config
      */
     public $default = [
         'hostname' => 'localhost',
-        'username' => 'mena',
-        'password' => 'mena123',
+        'username' => 'mena_admin',
+        'password' => 'admin@123',
         'database' => 'task_management',
-        'DBDriver' => 'Postgre',
+        'DBDriver' => 'MySQLi',
         'pConnect' => false,
-        'DBDebug' => (ENVIRONMENT !== 'production'),
+        'DBDebug' => (ENVIRONMENT !== 'develop'),
         'cacheOn' => false,
         'cacheDir' => '',
         'charset' => 'utf8',
@@ -45,6 +46,8 @@ class Database extends Config
         'failover' => [],
         'saveQueries' => true,
     ];
+
+    
     
     //    /**
     //     * Sample database connection for SQLite3.
