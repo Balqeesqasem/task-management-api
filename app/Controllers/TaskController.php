@@ -2,9 +2,7 @@
 
 namespace App\Controllers;
 
-use CodeIgniter\RESTful\ResourceController;
-
-class TaskController extends ResourceController
+class TaskController extends BaseController
 {
     protected $modelName = "App\Models\TaskModel";
     protected $format = "json";
@@ -20,9 +18,13 @@ class TaskController extends ResourceController
     }
 
     // Get all tasks
-    // /tasks, get
     public function index()
     {
+        if (!$this->authenticateUser()) {
+            // If authentication fails, this line prevents further execution
+            return;
+        }
+
         try {
             $tasks = $this->model->findAll();
             return $this->respond($tasks);
@@ -32,35 +34,36 @@ class TaskController extends ResourceController
     }
 
     // Create a new task
-    // /tasks, post
     public function create()
     {
+        if (!$this->authenticateUser()) {
+            return; // Authentication failed, do nothing
+        }
+
         $input = $this->request->getJSON(true);
-    
+
         if ($this->model->save($input)) {
-            // Fetch the newly created record to ensure all fields are returned
-            $id = $this->model->getInsertID(); // Get the ID of the newly created record
+            $id = $this->model->getInsertID();
             $task = $this->getTaskById($id);
-    
             return $this->respondCreated($task);
         } else {
-            // Return validation errors if they exist
             return $this->failValidationErrors($this->model->errors());
         }
     }
-    
 
     // Update an existing task
-    // /tasks/:id, put
     public function update($id = null)
     {
+        if (!$this->authenticateUser()) {
+            return; // Authentication failed, do nothing
+        }
+
         $task = $this->getTaskById($id);
         if (!is_array($task)) {
             return $task;
         }
 
         $input = $this->request->getJSON(true);
-        
         $data = [
             'title' => $input['title'] ?? $task['title'],
             'description' => $input['description'] ?? $task['description'],
@@ -75,13 +78,13 @@ class TaskController extends ResourceController
         }
     }
 
-
-    
-    
-
     // Delete a task
     public function delete($id = null)
     {
+        if (!$this->authenticateUser()) {
+            return; // Authentication failed, do nothing
+        }
+
         $task = $this->getTaskById($id);
         if (!is_array($task)) {
             return $task;
@@ -95,6 +98,10 @@ class TaskController extends ResourceController
     // Show a specific task
     public function show($id = null)
     {
+        if (!$this->authenticateUser()) {
+            return; // Authentication failed, do nothing
+        }
+
         $task = $this->getTaskById($id);
         if (!is_array($task)) {
             return $task;
