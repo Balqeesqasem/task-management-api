@@ -3,13 +3,24 @@
 namespace App\Controllers;
 
 use CodeIgniter\RESTful\ResourceController;
-use App\Models\TaskModel;
 
 class TaskController extends ResourceController
 {
-    protected $modelName = 'App\Models\TaskModel';
-    protected $format = 'json';
+    protected $modelName = "App\Models\TaskModel";
+    protected $format = "json";
 
+    // Common function to fetch the task by ID
+    private function getTaskById($id)
+    {
+        $task = $this->model->find($id);
+        if (!$task) {
+            return $this->failNotFound("Task not found.");
+        }
+        return $task;
+    }
+
+    // Get all tasks
+    // /tasks, get
     public function index()
     {
         try {
@@ -20,88 +31,75 @@ class TaskController extends ResourceController
         }
     }
 
+    // Create a new task
+    // /tasks, post
     public function create()
     {
         $input = $this->request->getJSON(true);
-        
-        // Debug the input data
-        log_message('debug', 'Request Input: ' . print_r($input, true));
-        
-        // Validate input data
-        if (!$this->validate([
-            'title'       => 'required|string|max_length[255]',
-            'status'      => 'permit_empty|in_list[pending,in-progress,completed]',
-            'due_date'    => 'permit_empty|valid_date'
-        ])) {
-            return $this->failValidationErrors($this->validator->getErrors());
-        }
     
-        // Prepare data for saving
-        $data = [
-            'title'       => $input['title'], // Title is required
-            'description' => $input['description'] ?? null,
-            'status'      => $input['status'] ?? 'pending',// Status can be null and will use DB default
-            'due_date'    => $input['due_date'] ?? null,
-        ];
+        if ($this->model->save($input)) {
+            // Fetch the newly created record to ensure all fields are returned
+            $id = $this->model->getInsertID(); // Get the ID of the newly created record
+            $task = $this->getTaskById($id);
     
-        try {
-            // Attempt to save data to the model
-            if ($this->model->save($data)) {
-                // Return success response with the saved data
-                return $this->respondCreated($data);
-            } else {
-                // Handle model validation errors
-                return $this->failValidationErrors($this->model->errors());
-            }
-        } catch (\Exception $e) {
-            // Handle any unexpected errors
-            return $this->failServerError('Failed to create task: ' . $e->getMessage());
+            return $this->respondCreated($task);
+        } else {
+            // Return validation errors if they exist
+            return $this->failValidationErrors($this->model->errors());
         }
     }
+    
 
+    // Update an existing task
+    // /tasks/:id, put
     public function update($id = null)
     {
-        $input = $this->request->getRawInput();
-        
-        // Validate input data
-        if (!$this->validate([
-            'title'       => 'required|string|max_length[255]',
-            'status'      => 'permit_empty|in_list[pending,in-progress,completed]',
-            'due_date'    => 'permit_empty|valid_date'
-        ])) {
-            return $this->failValidationErrors($this->validator->getErrors());
+        $task = $this->getTaskById($id);
+        if (!is_array($task)) {
+            return $task;
         }
 
-        // Prepare data for updating
+        $input = $this->request->getJSON(true);
+        
         $data = [
-            'id'          => $id,
-            'title'       => $input['title'],
-            'description' => $input['description'] ?? null,
-            'status'      => $input['status'] ?? null, // Status can be null and will use DB default
-            'due_date'    => $input['due_date'] ?? null,
+            'title' => $input['title'] ?? $task['title'],
+            'description' => $input['description'] ?? $task['description'],
+            'status' => $input['status'] ?? $task['status'],
+            'due_date' => $input['due_date'] ?? $task['due_date'],
         ];
 
-        try {
-            if ($this->model->save($data)) {
-                return $this->respond($data);
-            } else {
-                return $this->failValidationErrors($this->model->errors());
-            }
-        } catch (\Exception $e) {
-            return $this->failServerError($e->getMessage());
+        if ($this->model->update($id, $data)) {
+            return $this->respond([$this->model->find($id)]);
+        } else {
+            return $this->failValidationErrors($this->model->errors());
         }
     }
 
+
+    
+    
+
+    // Delete a task
     public function delete($id = null)
     {
-        try {
-            if ($this->model->delete($id)) {
-                return $this->respondDeleted(['id' => $id]);
-            } else {
-                return $this->failNotFound('Task not found.');
-            }
-        } catch (\Exception $e) {
-            return $this->failServerError($e->getMessage());
+        $task = $this->getTaskById($id);
+        if (!is_array($task)) {
+            return $task;
         }
+
+        if ($this->model->delete($id)) {
+            return $this->respond(null, 204); // Return 204 No Content
+        }
+    }
+
+    // Show a specific task
+    public function show($id = null)
+    {
+        $task = $this->getTaskById($id);
+        if (!is_array($task)) {
+            return $task;
+        }
+
+        return $this->respond($task);
     }
 }
