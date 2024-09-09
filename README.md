@@ -1,68 +1,135 @@
-# CodeIgniter 4 Application Starter
+# Task Management API
 
-## What is CodeIgniter?
+## Project Overview
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+This is a Task Management API developed using [CodeIgniter 4](https://codeigniter.com/), PHP, and MySQL. The API allows users to manage tasks, including CRUD operations, with authentication and JWT support. The project can be run both with Docker or manually by cloning the repository.
 
-This repository holds a composer-installable app starter.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+## Features
 
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
+- **Task Management**: Create, read, show, update, and delete tasks.
+- **User Authentication**: Register, login, and secure endpoints with JWT.
+- **Database Integration**: MySQL database for task storage.
+- **Postman Documentation**: Comprehensive API documentation.
 
-You can read the [user guide](https://codeigniter.com/user_guide/)
-corresponding to the latest version of the framework.
+## Getting Started
 
-## Installation & updates
+### With Docker
 
-`composer create-project codeigniter4/appstarter` then `composer update` whenever
-there is a new release of the framework.
+1. **Clone the Repository**
 
-When updating, check the release notes to see if there are any changes you might need to apply
-to your `app` folder. The affected files can be copied or merged from
-`vendor/codeigniter4/framework/app`.
+    ```bash
+    git clone https://github.com/Balqeesqasem/task-management-api.git
+    cd task-management-api
+    ```
 
-## Setup
+2. **Build and Start the Docker Containers**
 
-Copy `env` to `.env` and tailor for your app, specifically the baseURL
-and any database settings.
+    ```bash
+    docker-compose up --build
+    ```
 
-## Important Change with index.php
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+Here's an updated version of the README with the additional instructions for accessing the API in a separate terminal tab:
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
+markdown
+Copy code
+# Task Management API
 
-**Please** read the user guide for a better explanation of how CI4 works!
+## Project Overview
 
-## Repository Management
+This is a Task Management API developed using [CodeIgniter 4](https://codeigniter.com/), PHP, and MySQL. The API allows users to manage tasks, including CRUD operations, with authentication and JWT support. The project can be run both with Docker or manually by cloning the repository.
 
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
+## Features
 
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
+- **Task Management**: Create, read, update, and delete tasks.
+- **User Authentication**: Register, login, and secure endpoints with JWT.
+- **Database Integration**: MySQL database for task storage.
+- **Postman Documentation**: Comprehensive API documentation.
 
-## Server Requirements
+## Getting Started
 
-PHP version 8.1 or higher is required, with the following extensions installed:
+### With Docker
 
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
+1. **Clone the Repository**
 
-> [!WARNING]
-> - The end of life date for PHP 7.4 was November 28, 2022.
-> - The end of life date for PHP 8.0 was November 26, 2023.
-> - If you are still using PHP 7.4 or 8.0, you should upgrade immediately.
-> - The end of life date for PHP 8.1 will be December 31, 2025.
+    ```bash
+    git clone https://github.com/Balqeesqasem/task-management-api.git
+    cd task-management-api
+    ```
 
-Additionally, make sure that the following extensions are enabled in your PHP:
+2. **Build and Start the Docker Containers**
 
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+    ```bash
+    docker-compose up --build
+    ```
+
+3. **Access the Application**
+
+    To access the API, you need to open an extra terminal tab and run the following commands:
+
+    ```bash
+    docker-compose exec app /bin/bash
+    php spark serve --host=0.0.0.0
+    ```
+
+    After running the above commands, the application will be available at [http://localhost:8080](http://localhost:8080).
+
+
+4. **Stop the Docker Containers**
+
+    ```bash
+    docker-compose down
+    ```
+
+### Without Docker
+
+1. **Clone the Repository**
+
+    ```bash
+    git clone https://github.com/Balqeesqasem/task-management-api.git
+    cd task-management-api
+    ```
+
+2. **Install Dependencies**
+
+    Ensure you have [Composer](https://getcomposer.org/) installed.
+
+    ```bash
+    composer install
+    ```
+
+3. **Set Up the Environment**
+
+    Create a `.env` file and set the following environment variables:
+
+    ```
+    DB_HOST=localhost
+    DB_USER=mena
+    DB_PASSWORD=mena123
+    DB_NAME=task_management
+    ```
+
+4. **Run Migrations**
+
+    ```bash
+    php spark migrate
+    ```
+
+5. **Start the Application**
+
+    ```bash
+    php spark serve --host=0.0.0.0
+    ```
+
+    The application will be available at [http://localhost:8080](http://localhost:8080).
+
+## Postman Documentation
+
+You can find the Postman documentation for this API at [this link](https://documenter.getpostman.com/view/11123143/2sAXjSy8tX#36ccd50e-e9cf-469c-890b-71dab2001747).
+
+
+
+## Contact
+
+For any questions or feedback, please reach out to [balqeesmohammadq.95@gmail.com](balqeesmohammadq.95@gmail.com).
+
