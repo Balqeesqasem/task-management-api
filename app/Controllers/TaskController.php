@@ -2,11 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Libraries\JWTAuth;
-
-use CodeIgniter\RESTful\ResourceController;
-
-class TaskController extends ResourceController
+class TaskController extends BaseController
 {
     protected $modelName = "App\Models\TaskModel";
     protected $format = "json";
@@ -21,23 +17,12 @@ class TaskController extends ResourceController
         return $task;
     }
 
-    // Authenticate and authorize the user
-    private function authenticateUser()
-    {
-        $auth = JWTAuth::authenticate($this->request);
-        if ($auth['status'] !== 200) {
-            return $this->response->setStatusCode($auth['status'], $auth['message']);
-        }
-        return $auth['user'];
-    }
-
     // Get all tasks
-    // /tasks, GET
     public function index()
     {
-        $user = $this->authenticateUser();
-        if (!$user) {
-            return $this->response->setStatusCode(401, 'Unauthorized');
+        if (!$this->authenticateUser()) {
+            // If authentication fails, this line prevents further execution
+            return;
         }
 
         try {
@@ -49,35 +34,28 @@ class TaskController extends ResourceController
     }
 
     // Create a new task
-    // /tasks, POST
     public function create()
     {
-        $user = $this->authenticateUser();
-        if (!$user) {
-            return $this->response->setStatusCode(401, 'Unauthorized');
+        if (!$this->authenticateUser()) {
+            return; // Authentication failed, do nothing
         }
 
         $input = $this->request->getJSON(true);
 
         if ($this->model->save($input)) {
-            // Fetch the newly created record to ensure all fields are returned
-            $id = $this->model->getInsertID(); // Get the ID of the newly created record
+            $id = $this->model->getInsertID();
             $task = $this->getTaskById($id);
-
             return $this->respondCreated($task);
         } else {
-            // Return validation errors if they exist
             return $this->failValidationErrors($this->model->errors());
         }
     }
 
     // Update an existing task
-    // /tasks/:id, PUT
     public function update($id = null)
     {
-        $user = $this->authenticateUser();
-        if (!$user) {
-            return $this->response->setStatusCode(401, 'Unauthorized');
+        if (!$this->authenticateUser()) {
+            return; // Authentication failed, do nothing
         }
 
         $task = $this->getTaskById($id);
@@ -86,7 +64,6 @@ class TaskController extends ResourceController
         }
 
         $input = $this->request->getJSON(true);
-        
         $data = [
             'title' => $input['title'] ?? $task['title'],
             'description' => $input['description'] ?? $task['description'],
@@ -102,12 +79,10 @@ class TaskController extends ResourceController
     }
 
     // Delete a task
-    // /tasks/:id, DELETE
     public function delete($id = null)
     {
-        $user = $this->authenticateUser();
-        if (!$user) {
-            return $this->response->setStatusCode(401, 'Unauthorized');
+        if (!$this->authenticateUser()) {
+            return; // Authentication failed, do nothing
         }
 
         $task = $this->getTaskById($id);
@@ -121,12 +96,10 @@ class TaskController extends ResourceController
     }
 
     // Show a specific task
-    // /tasks/:id, GET
     public function show($id = null)
     {
-        $user = $this->authenticateUser();
-        if (!$user) {
-            return $this->response->setStatusCode(401, 'Unauthorized');
+        if (!$this->authenticateUser()) {
+            return; // Authentication failed, do nothing
         }
 
         $task = $this->getTaskById($id);
