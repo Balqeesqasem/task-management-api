@@ -6,7 +6,7 @@ This is a Task Management API developed using [CodeIgniter 4](https://codeignite
 
 ## Features
 
-- **Task Management**: Create, read, update, and delete tasks.
+- **Task Management**: Create, read, show, update, and delete tasks.
 - **User Authentication**: Register, login, and secure endpoints with JWT.
 - **Database Integration**: MySQL database for task storage.
 - **Postman Documentation**: Comprehensive API documentation.
